@@ -5,4 +5,8 @@ node_modules
 data.json
 main.js
 main.js.LICENSE.txt
+release
+deploy.bat
+
+
 

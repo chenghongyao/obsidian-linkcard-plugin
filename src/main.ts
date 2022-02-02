@@ -79,8 +79,8 @@ export default class URLBlockPlugin extends Plugin {
 				if (p.parentElement.tagName !== "DIV" || p.children.length !== 1)continue;
 				const ael = p.children[0] as HTMLAnchorElement;
 				if (ael.tagName == "A" && ael.className === "external-link" && p.textContent === ael.textContent ) {
-					const href = ael.href;
-					const g = r.exec(href)
+					const g = r.exec(ael.href)
+					if (!g) continue;
 					let icon = "";
 					if (g) {
 						icon = g[1] + "/favicon.ico";
