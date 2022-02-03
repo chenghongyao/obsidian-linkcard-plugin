@@ -116,19 +116,18 @@ export default class URLBlockPlugin extends Plugin {
 	}
 	async onload() {
 		const r = /(^https?:\/\/[^/]+(?::\d+)?)/;
-		const self = this;
 		this.registerMarkdownPostProcessor((element, context) => {
-			const ps = element.querySelectorAll("p");
-			for (let index = 0; index < ps.length; index++) {
-				const p = ps.item(index);
-				if (p.parentElement.tagName !== "DIV" || p.children.length !== 1)continue;
-				const ael = p.children[0] as HTMLAnchorElement;
-				if (ael.tagName == "A" && ael.className === "external-link" && p.textContent === ael.textContent ) {
-					const g = r.exec(ael.href)
-					if (!g) continue;
-					const title = ael.textContent;
-					context.addChild(new LinkBlock(p, ael.href,title,g[1]));
-				}
+
+			if (element.childElementCount !== 1 && element.children[0].tagName !== "P") return;
+			const p = element.children[0] as HTMLElement;
+			if (p.children.length !== 1 || p.children[0].tagName !== "A") return;
+
+			const ael = p.children[0] as HTMLAnchorElement;
+			if (ael.className === "external-link" && p.textContent === ael.textContent ) {
+				const g = r.exec(ael.href)
+				if (!g) return;
+				const title = ael.textContent;
+				context.addChild(new LinkBlock(p, ael.href,title,g[1]));
 			}
 		});
 	}
