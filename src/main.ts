@@ -45,27 +45,8 @@ export class LinkBlock extends MarkdownRenderChild {
 		iconEl.appendChild(imgEl);
 		contentEl.appendChild(iconEl);
 		
-		if (this.icon) {
-			imgEl.setAttr("src",this.icon);
-		} else {
-			request({url:this.href}).then((html: string) => {
-				const doc = new DOMParser().parseFromString(html,"text/html");
-				const link = doc.querySelector("link[rel='shortcut icon']")?.getAttr("href");
-				if (link) {
-					if (link.startsWith("/")) {
-						this.icon = this.host + link;
-					} else {
-						this.icon = link;
-					}
-					imgEl.setAttr("src",this.icon);
-				}
-			});
-		}
-
-
 		const titleEl = blockEl.createDiv({
 			cls: "link-card-title",
-			text: this.title
 		});
 
 
@@ -73,6 +54,49 @@ export class LinkBlock extends MarkdownRenderChild {
 			cls: "link-card-href",
 			text: this.href
 		});
+
+
+		if (this.icon) {
+			imgEl.setAttr("src",this.icon);
+		}
+
+		if (this.title) {
+			titleEl.setText(this.title);
+		}
+
+		if (!this.icon || !this.title) {
+			request({url:this.href}).then((html: string) => {
+				const doc = new DOMParser().parseFromString(html,"text/html");
+				if (!this.icon) {
+					const link = doc.querySelector("link[rel='shortcut icon']")?.getAttr("href");
+					if (link) {
+						if (link.startsWith("/")) {
+							this.icon = this.host + link;
+						} else {
+							this.icon = link;
+						}
+
+						imgEl.setAttr("src",this.icon);
+					}
+				}
+
+				if (!this.title) {
+					const title = doc.querySelector("title")?.textContent;
+					if (title) {
+						this.title = title;
+					} else {
+						this.title = this.href;
+					}
+					titleEl.setText(this.title);
+				}
+			});
+		}
+
+
+		
+
+
+
 
 		contentEl.appendChild(titleEl);
 		blockEl.appendChild(contentEl);
@@ -101,6 +125,7 @@ export default class URLBlockPlugin extends Plugin {
 				if (ael.tagName == "A" && ael.className === "external-link" && p.textContent === ael.textContent ) {
 					const g = r.exec(ael.href)
 					if (!g) continue;
+					console.log(ael);
 					const title = ael.textContent;
 					context.addChild(new LinkBlock(p, ael.href,title,g[1]));
 				}
