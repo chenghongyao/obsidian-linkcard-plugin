@@ -125,7 +125,6 @@ export default class URLBlockPlugin extends Plugin {
 				if (ael.tagName == "A" && ael.className === "external-link" && p.textContent === ael.textContent ) {
 					const g = r.exec(ael.href)
 					if (!g) continue;
-					console.log(ael);
 					const title = ael.textContent;
 					context.addChild(new LinkBlock(p, ael.href,title,g[1]));
 				}
