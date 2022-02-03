@@ -68,7 +68,8 @@ export class LinkBlock extends MarkdownRenderChild {
 			request({url:this.href}).then((html: string) => {
 				const doc = new DOMParser().parseFromString(html,"text/html");
 				if (!this.icon) {
-					const link = doc.querySelector("link[rel='shortcut icon']")?.getAttr("href");
+					let link = doc.querySelector("link[rel='shortcut icon']")?.getAttr("href");
+					if (!link) link = doc.querySelector("link[rel='icon']")?.getAttr("href");
 					if (link) {
 						if (link.startsWith("/")) {
 							this.icon = this.host + link;
