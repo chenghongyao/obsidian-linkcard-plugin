@@ -1,4 +1,4 @@
-import {Plugin} from "obsidian";
+import {Plugin, request} from "obsidian";
 
 import { MarkdownRenderChild } from "obsidian";
 
@@ -8,14 +8,17 @@ export class LinkBlock extends MarkdownRenderChild {
 	href: string;
 	title: string;
 	icon: string;
+	host: string;
+	defaultIcon: string = "/favicon.ico";
 
-	constructor(containerEl: HTMLElement,href: string, title: string, icon: string) {
+
+	constructor(containerEl: HTMLElement,href: string, title: string,host: string) {
 		super(containerEl);
-
 		this.href = href;
 		this.title = title;
-		this.icon = icon;
+		this.host = host;
 	}
+
 	onload() {
 
 		const blockEl =  this.containerEl.createEl("a",{
@@ -28,24 +31,37 @@ export class LinkBlock extends MarkdownRenderChild {
 			cls: "link-card-title-container"
 		});
 
+		
+		const iconEl = blockEl.createDiv({
+			cls: "link-card-icon-container",
+		});
+
+		const imgEl = blockEl.createEl("img",{
+			cls: "link-card-icon-img",
+			attr: {
+				"src":this.host + this.defaultIcon
+			}
+		});
+		iconEl.appendChild(imgEl);
+		contentEl.appendChild(iconEl);
+		
 		if (this.icon) {
-			const iconEl = blockEl.createDiv({
-				cls: "link-card-icon-container",
-			});
-	
-	
-			const imgEl = blockEl.createEl("img",{
-				cls: "link-card-icon-img",
-				attr: {
-					src:this.icon
+			imgEl.setAttr("src",this.icon);
+		} else {
+			request({url:this.href}).then((html: string) => {
+				const doc = new DOMParser().parseFromString(html,"text/html");
+				const link = doc.querySelector("link[rel='shortcut icon']")?.getAttr("href");
+				if (link) {
+					if (link.startsWith("/")) {
+						this.icon = this.host + link;
+					} else {
+						this.icon = link;
+					}
+					imgEl.setAttr("src",this.icon);
 				}
 			});
-			iconEl.appendChild(imgEl);
-			contentEl.appendChild(iconEl);
 		}
 
-
-	
 
 		const titleEl = blockEl.createDiv({
 			cls: "link-card-title",
@@ -70,8 +86,12 @@ export class LinkBlock extends MarkdownRenderChild {
 
 export default class URLBlockPlugin extends Plugin {
 
+	async getIconPath(root: string) {
+
+	}
 	async onload() {
 		const r = /(^https?:\/\/[^/]+(?::\d+)?)/;
+		const self = this;
 		this.registerMarkdownPostProcessor((element, context) => {
 			const ps = element.querySelectorAll("p");
 			for (let index = 0; index < ps.length; index++) {
@@ -81,12 +101,8 @@ export default class URLBlockPlugin extends Plugin {
 				if (ael.tagName == "A" && ael.className === "external-link" && p.textContent === ael.textContent ) {
 					const g = r.exec(ael.href)
 					if (!g) continue;
-					let icon = "";
-					if (g) {
-						icon = g[1] + "/favicon.ico";
-					}
 					const title = ael.textContent;
-					context.addChild(new LinkBlock(p, ael.href,title,icon));
+					context.addChild(new LinkBlock(p, ael.href,title,g[1]));
 				}
 			}
 		});
