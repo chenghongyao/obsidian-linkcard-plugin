@@ -43,7 +43,6 @@ export class LinkBlock extends MarkdownRenderChild {
 			}
 		});
 		iconEl.appendChild(imgEl);
-		contentEl.appendChild(iconEl);
 		
 		const titleEl = blockEl.createDiv({
 			cls: "link-card-title",
@@ -62,6 +61,7 @@ export class LinkBlock extends MarkdownRenderChild {
 
 		if (this.title) {
 			titleEl.setText(this.title);
+			blockEl.setAttr("title",this.title);
 		}
 
 		if (!this.icon || !this.title) {
@@ -91,6 +91,7 @@ export class LinkBlock extends MarkdownRenderChild {
 						this.title = this.href;
 					}
 					titleEl.setText(this.title);
+					blockEl.setAttr("title",this.title);
 				}
 			});
 		}
@@ -99,8 +100,7 @@ export class LinkBlock extends MarkdownRenderChild {
 		
 
 
-
-
+		contentEl.appendChild(iconEl);
 		contentEl.appendChild(titleEl);
 		blockEl.appendChild(contentEl);
 		blockEl.appendChild(linkEl);
