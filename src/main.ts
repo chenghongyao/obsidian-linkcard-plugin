@@ -18,7 +18,7 @@ export class LinkBlock extends MarkdownRenderChild {
 		this.title = title;
 		this.host = host;
 	}
-
+	
 	onload() {
 
 		const blockEl =  this.containerEl.createEl("a",{
@@ -73,6 +73,8 @@ export class LinkBlock extends MarkdownRenderChild {
 					if (link) {
 						if (link.startsWith("/")) {
 							this.icon = this.host + link;
+						} else if (link.startsWith("./")) {
+							this.icon = this.href + link.substring(this.href.endsWith("/") ? 2 : 1);
 						} else {
 							this.icon = link;
 						}
