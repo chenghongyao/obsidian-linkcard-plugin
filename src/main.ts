@@ -67,8 +67,12 @@ export class LinkBlock extends MarkdownRenderChild {
 		if (!this.icon || !this.title) {
 			request({url:this.href}).then((html: string) => {
 				const doc = new DOMParser().parseFromString(html,"text/html");
+				// console.log(doc);
+
 				if (!this.icon) {
-					let link = doc.querySelector("link[rel='icon']")?.getAttr("href");
+					let link = doc.querySelector("link[rel='icon'][type='image/x-icon']")?.getAttr("href");
+					if (!link) link = doc.querySelector("link[rel='shortcut icon'][type='image/x-icon']")?.getAttr("href");
+					if (!link) link = doc.querySelector("link[rel='icon']")?.getAttr("href");
 					if (!link) link = doc.querySelector("link[rel='shortcut icon']")?.getAttr("href");
 					if (link) {
 						if (link.startsWith("http://") || link.startsWith("https://")) { // absoulte address
@@ -125,7 +129,7 @@ export default class URLBlockPlugin extends Plugin {
 		const r = /(^https?:\/\/[^/]+(?::\d+)?)/;
 		this.registerMarkdownPostProcessor((element, context) => {
 
-			if (element.childElementCount !== 1 && element.children[0].tagName !== "P") return;
+			if (element.tagName !== "DIV" || element.childElementCount !== 1 || element.children[0].tagName !== "P") return;
 			const p = element.children[0] as HTMLElement;
 			if (p.children.length !== 1 || p.children[0].tagName !== "A") return;
 
