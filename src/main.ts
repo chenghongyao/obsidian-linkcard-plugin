@@ -71,13 +71,18 @@ export class LinkBlock extends MarkdownRenderChild {
 					let link = doc.querySelector("link[rel='shortcut icon']")?.getAttr("href");
 					if (!link) link = doc.querySelector("link[rel='icon']")?.getAttr("href");
 					if (link) {
-						if (link.startsWith("/")) {
-							this.icon = this.host + link;
-						} else if (link.startsWith("./")) {
-							this.icon = this.href + link.substring(this.href.endsWith("/") ? 2 : 1);
-						} else {
+						if (link.startsWith("http://") || link.startsWith("https://")) { // absoulte address
 							this.icon = link;
+						} else {
+							if (link.startsWith("/")) {
+								this.icon = this.host + link;
+							} else if (link.startsWith("./")) {
+								this.icon = this.href + link.substring(this.href.endsWith("/") ? 2 : 1);
+							} else {
+								this.icon = this.host + "/" + link;
+							}
 						}
+					
 
 						imgEl.setAttr("src",this.icon);
 					}
