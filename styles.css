@@ -50,6 +50,9 @@ div.link-card-href {
 div.link-card-frame-wrapper {
     text-align: center;
 }
+div.link-card-frame-wrapper.netease iframe{
+    max-width: 600px;
+}
 
 div.link-card-frame-wrapper.bilibili {
     aspect-ratio: 16 / 9;

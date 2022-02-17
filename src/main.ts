@@ -146,7 +146,7 @@ export class BilibiliBlock extends MarkdownRenderChild {
 
 	onload() {
 		const wrapperEl = this.containerEl.createDiv("link-card-frame-wrapper bilibili");
-		wrapperEl.innerHTML = `<iframe class="iframe-bilibili" src="https://player.bilibili.com/player.html?bvid=${this.id}&page=1&high_quality=1&as_wide=1&allowfullscreen=true" frameborder="no" allowfullscreen sandbox="allow-top-navigation-by-user-activation allow-same-origin allow-forms allow-scripts allow-popups" class="" style="width: 100%; height:100%" ></iframe>`;
+		wrapperEl.innerHTML = `<iframe src="https://player.bilibili.com/player.html?bvid=${this.id}&page=1&high_quality=1&as_wide=1&allowfullscreen=true" frameborder="no" allowfullscreen sandbox="allow-top-navigation-by-user-activation allow-same-origin allow-forms allow-scripts allow-popups" class="" style="width: 100%; height:100%" ></iframe>`;
 		this.containerEl.replaceWith(wrapperEl);
 	}
 }
