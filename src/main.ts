@@ -119,6 +119,37 @@ export class LinkBlock extends MarkdownRenderChild {
 	}
 }
 
+export class NeteaseBlock extends MarkdownRenderChild {
+	id: string;
+	height: number;
+	constructor(containerEl: HTMLElement,id: string,height:number = 86) {
+		super(containerEl);
+		this.id = id;
+		this.height = height;
+	}
+
+	onload() {
+		const wrapperEl = this.containerEl.createDiv("link-card-frame-wrapper netease");
+		wrapperEl.innerHTML = `<iframe src="https://music.163.com/outchain/player?type=2&id=${this.id}&auto=0&height=66" frameborder="no" allowfullscreen class height="${this.height}" style="width: 100%; pointer-events: auto;" sandbox="allow-forms allow-presentation allow-same-origin allow-scripts allow-modals"></iframe>`;
+		this.containerEl.replaceWith(wrapperEl);
+	}
+}
+
+
+export class BilibiliBlock extends MarkdownRenderChild {
+	id: string;
+	constructor(containerEl: HTMLElement,id: string) {
+		super(containerEl);
+		this.id = id;
+	}
+
+
+	onload() {
+		const wrapperEl = this.containerEl.createDiv("link-card-frame-wrapper bilibili");
+		wrapperEl.innerHTML = `<iframe class="iframe-bilibili" src="https://player.bilibili.com/player.html?bvid=${this.id}&page=1&high_quality=1&as_wide=1&allowfullscreen=true" frameborder="no" allowfullscreen sandbox="allow-top-navigation-by-user-activation allow-same-origin allow-forms allow-scripts allow-popups" class="" style="width: 100%; height:100%" ></iframe>`;
+		this.containerEl.replaceWith(wrapperEl);
+	}
+}
 
 export default class URLBlockPlugin extends Plugin {
 
@@ -137,6 +168,21 @@ export default class URLBlockPlugin extends Plugin {
 			if (ael.className === "external-link" && p.textContent === ael.textContent ) {
 				const g = r.exec(ael.href)
 				if (!g) return;
+				
+				const netg = /^https:\/\/music.163.com\/#\/song\?id=(\d*)/.exec(ael.href);
+				if (netg) {
+					const id = netg[1]
+					context.addChild(new NeteaseBlock(p, id));
+					return;
+				} 
+				const blig = /^https:\/\/www.bilibili.com\/video\/([A-Za-z0-9]*)/.exec(ael.href);
+				if (blig) {
+					const id = blig[1];
+					context.addChild(new BilibiliBlock(p, id));
+					return;
+				}
+
+
 				const title = ael.textContent;
 				context.addChild(new LinkBlock(p, ael.href,title,g[1]));
 			}

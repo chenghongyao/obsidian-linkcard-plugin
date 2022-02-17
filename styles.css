@@ -46,3 +46,11 @@ div.link-card-href {
     text-overflow: ellipsis;  
 
 }
+
+div.link-card-frame-wrapper {
+    text-align: center;
+}
+
+div.link-card-frame-wrapper.bilibili {
+    aspect-ratio: 16 / 9;
+}
