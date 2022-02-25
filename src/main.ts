@@ -83,7 +83,11 @@ export class LinkBlock extends MarkdownRenderChild {
 							} else if (link.startsWith("./")) {
 								this.icon = this.href + link.substring(this.href.endsWith("/") ? 2 : 1);
 							} else {
-								this.icon = this.host + "/" + link;
+								if (this.href.endsWith("/#/")) {
+									this.icon = this.href.substring(0,this.href.length-2) + link;
+								} else {
+									this.icon = this.href + (this.href.endsWith("/") ? "/" : "") + link;
+								}
 							}
 						}
 					
